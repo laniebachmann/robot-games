@@ -1,0 +1,6 @@
+/* Make the "response registered" marker on the robot's chest obvious.
+   Default (factory-css) only changes a 2px grey border to light grey. */
+.torso .rune[status='go'] {
+  border: 4px solid #ffd600 !important;           /* bright yellow, distinct from the blue/red scanner colors */
+  box-shadow: 0 0 6px 2px rgba(255, 214, 0, 0.6);
+}

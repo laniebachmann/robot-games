@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Robot Recruitment</title>
+
+  <!-- Load libraries -->
+  <script src="static/lib/jquery-3.3.1/jquery.min.js"></script>
+  <script src="static/lib/jspsych-6.1.0/jspsych.js"></script>
+  <script src="static/js/session.js" type="text/javascript"></script>
+
+  <!-- Load experiment -->
+  <script src="static/js/game1/game1-experiment.js" type="text/javascript"></script>
+
+  <!-- Load NivTurk plug-ins -->
+  <script src="static/js/datapipe-plugins.js" type="text/javascript"></script>
+
+  <!-- Load jsPsych plug-ins -->
+  <script src="static/js/game1/jspsych-game1-instructions.js" type="text/javascript"></script>
+  <script src="static/js/game1/jspsych-game1-comprehension.js" type="text/javascript"></script>
+  <script src="static/js/game1/jspsych-game1-practice.js" type="text/javascript"></script>
+  <script src="static/js/game1/jspsych-game1-learning.js" type="text/javascript"></script>
+  <script src="static/js/game1/jspsych-game1-probe.js" type="text/javascript"></script>
+  <script src="static/lib/jspsych-6.1.0/plugins/jspsych-call-function.js" type="text/javascript"></script>
+  <script src="static/lib/jspsych-6.1.0/plugins/jspsych-fullscreen.js" type="text/javascript"></script>
+
+  <!-- Load CSS styles -->
+  <link rel="stylesheet" href="static/lib/jspsych-6.1.0/css/jspsych.css">
+  <link rel="stylesheet" href="static/css/robots-css.min.css">
+
+</head>
+<body></body>
+<script>
+
+  // Display alert message on back/refresh.
+  // https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
+  function verify_unload(e){
+    e.preventDefault();
+    (e || window.event).returnValue = null;
+    return null;
+  };
+  window.addEventListener("beforeunload", verify_unload);
+
+  // Add version metadata.
+  jsPsych.data.addProperties({
+    task_version: 'pipeline-v1-palm-fixedcounts',
+  });
+
+  // Define global variables.
+  var low_quality = false;
+
+  // Define timeline.
+  var timeline = [];
+
+  // Full screen is handled once by index.html (the shell); only request it here if the page is opened on its own.
+  document.body.style.backgroundColor = "#d2d2d2";
+  if (!IN_SHELL) {
+    timeline.push({
+      type: 'fullscreen',
+      fullscreen_mode: true,
+    });
+  }
+
+  timeline = timeline.concat(instructions);        // Instructions loop
+  timeline = timeline.concat(comprehension_check); // Comprehension check (implicit)
+  timeline = timeline.concat(ready);
+  //timeline = timeline.concat(learning_phase_1);
+  //timeline = timeline.concat(instructions_05);
+  //timeline = timeline.concat(probe_phase_1);
+  //timeline = timeline.concat(instructions_06);
+  //timeline = timeline.concat(learning_phase_2);
+  //timeline = timeline.concat(instructions_05);
+  //timeline = timeline.concat(probe_phase_2);
+
+  jsPsych.init({
+    timeline: timeline,
+    show_progress_bar: false,
+    on_finish: function() {
+
+      // Remove requirement to verify redirect
+      window.removeEventListener("beforeunload", verify_unload);
+
+      // Add interactions to the data variable
+      var interaction_data = jsPsych.data.getInteractionData();
+      jsPsych.data.get().addToLast({interactions: interaction_data.json()});
+
+      // Display jsPsych data in viewport.
+      // jsPsych.data.displayData();
+
+      go_to('game1.html');
+      //pass_data_palminteri();
+
+    }
+  })
+
+</script>
+</html>
